@@ -1,5 +1,6 @@
 # syntax = docker/dockerfile:1
-FROM --platform=$BUILDPLATFORM golang:1.18 AS base
+# FROM --platform=$BUILDPLATFORM golang:1.18 AS base
+FROM golang:1.18 AS base
 WORKDIR /workspace
 ENV CGO_ENABLED=0
 COPY go.* .
@@ -31,7 +32,7 @@ RUN --mount=target=. \
 FROM scratch AS export
 COPY --from=build /out/alertmanager-to-github /
 
-FROM --platform=${BUILDPLATFORM} gcr.io/distroless/static:nonroot
+FROM gcr.io/distroless/static:nonroot-${TARGETARCH}
 COPY --from=build /out/alertmanager-to-github /
 ENTRYPOINT ["/alertmanager-to-github"]
 CMD ["start"]
